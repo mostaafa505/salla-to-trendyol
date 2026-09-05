@@ -1,1 +1,0 @@
-# salla-to-trendyol
