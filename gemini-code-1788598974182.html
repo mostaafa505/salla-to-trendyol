@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة أسعار البائعين | Trendyol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        trendyol: '#F27A1A',
+                        'trendyol-dark': '#d96a12',
+                        'trendyol-light': '#fdf2eb',
+                        'trendyol-gray': '#f5f5f5',
+                        'trendyol-text': '#333333'
+                    },
+                    fontFamily: {
+                        sans: ['Tajawal', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #f5f5f5; /* لون خلفية نظام البائعين */
+        }
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input:focus {
+            box-shadow: 0 0 0 3px rgba(242, 122, 26, 0.15); /* تأثير تحديد حقول ترينديول */
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 font-sans text-trendyol-text">
+
+    <div class="bg-white p-7 rounded-lg shadow-sm max-w-md w-full border border-gray-200">
+        
+        <div class="text-center mb-8 border-b border-gray-100 pb-5">
+            <div class="text-trendyol text-4xl font-extrabold tracking-tighter mb-1 select-none">trendyol</div>
+            <h1 class="text-sm font-semibold text-gray-500">حاسبة تسعير البائعين</h1>
+        </div>
+
+        <div class="space-y-5">
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">المبلغ الصافي المطلوب لك (ريال)</label>
+                <div class="relative">
+                    <input type="number" id="netAmount" placeholder="48" value="48" class="w-full pl-4 pr-10 py-3 rounded-md border border-gray-300 focus:border-trendyol outline-none transition-colors text-lg font-semibold text-gray-800">
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">SAR</span>
+                </div>
+            </div>
+
+            <div class="flex gap-4 p-4 bg-trendyol-gray rounded-md border border-gray-100">
+                <div class="flex-1">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">عمولة المنصة (%)</label>
+                    <input type="number" id="percentFee" value="16" class="w-full px-3 py-2 rounded border border-gray-300 outline-none focus:border-trendyol text-sm text-gray-700 bg-white transition-colors">
+                </div>
+                <div class="flex-1">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">الرسوم الثابتة (SAR)</label>
+                    <input type="number" id="fixedFee" value="12" class="w-full px-3 py-2 rounded border border-gray-300 outline-none focus:border-trendyol text-sm text-gray-700 bg-white transition-colors">
+                </div>
+            </div>
+
+            <button onclick="calculatePrice()" class="w-full bg-trendyol hover:bg-trendyol-dark text-white font-bold py-3.5 px-6 rounded-md transition-colors duration-200 mt-2">
+                احسب سعر البيع
+            </button>
+        </div>
+
+        <div id="resultBox" class="mt-6 hidden transition-all duration-300">
+            <div class="bg-trendyol-light border border-[#fbd3b6] rounded-md p-5 text-center">
+                <p class="text-sm font-semibold text-gray-600 mb-1">سعر البيع المقترح للمنتج:</p>
+                <div class="flex items-baseline justify-center gap-1 mt-2">
+                    <span id="finalPrice" class="text-3xl font-extrabold text-trendyol">0</span>
+                    <span class="text-base font-bold text-trendyol">SAR</span>
+                </div>
+                <div class="mt-3 text-xs text-gray-500 flex justify-center items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-trendyol" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    يشمل هذا السعر عمولة المنصة والرسوم الثابتة
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculatePrice() {
+            const net = parseFloat(document.getElementById('netAmount').value);
+            const percent = parseFloat(document.getElementById('percentFee').value);
+            const fixed = parseFloat(document.getElementById('fixedFee').value);
+
+            if (isNaN(net) || net <= 0) {
+                alert('يرجى إدخال مبلغ صحيح.');
+                return;
+            }
+
+            // المعادلة: السعر = (الصافي + الرسوم الثابتة) / (1 - (النسبة / 100))
+            const percentDecimal = percent / 100;
+            const remainingPercent = 1 - percentDecimal;
+            const finalPrice = (net + fixed) / remainingPercent;
+
+            const resultElement = document.getElementById('finalPrice');
+            const resultBox = document.getElementById('resultBox');
+            
+            resultBox.classList.remove('hidden');
+            
+            // تحديث الرقم مباشرة بصيغة احترافية
+            resultElement.innerText = finalPrice.toFixed(2);
+        }
+    </script>
+</body>
+</html>
